@@ -16,18 +16,29 @@
         </div>
     </div>
     <div class="col-md-2">
-        <div class="controllBox">
+        <div class="controlBox">
+            <span>
+               <select id="playerCount" name="playerCount" class="form-control">
+                   <option value="1">Ein Spieler</option>
+                   <option value="2">Zwei Spieler</option>
+               </select>
+            </span>
             <span id="start" class="btn btn-success">Start</span>
         </div>
-        <div id="score" class="box">
-
+        <div class="row">
+            <div class="col-md-1">
+                <div id="score1" class="box"></div>
+                <div id="combos1" class="box"></div>
+            </div>
+            <div class="col-md-1">
+                <div id="score2" class="box"></div>
+                <div id="combos2" class="box"></div>
+            </div>
         </div>
-        <div id="combos" class="box">
 
-        </div>
     </div>
     <div class="col-md-5">
-        <div id="player2">
+        <div id="player2" class="box">
 
         </div>
     </div>
