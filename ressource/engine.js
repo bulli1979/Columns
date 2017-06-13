@@ -30,7 +30,7 @@ var Game  = function(id){
     this.dropping = false;
     this.Combo = 0;
     this.ComboCount = 0;
-    this.currentTime = 500;
+    this.currentTime = 2000;
     this.gameTime = 0;
     this.gameLevel = 1;
 
@@ -38,7 +38,7 @@ var Game  = function(id){
     this.getMax = function(orientation){
         switch (orientation) {
             case 0: // Horizontal
-                return objConsts.playFieldSize()-4;  //Feldgrösse -4 letzte zu prüfende von links
+                return objConsts.playFieldSize()-3;  //Feldgrösse -4 letzte zu prüfende von links
                 break;
             case 1: // Vertical
                 return ((objConsts.rows -2) * objConsts.columns)-1; // 2 Zeilen abziehen bis zur letzten Position
@@ -93,20 +93,24 @@ var Game  = function(id){
     };
 
     this.chkHorizontal = function(){
-        var max = this.getMax(0),i,tmpMatch,match,rest,tmpPos;
+        var max = this.getMax(0),i,tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
         for(var x = 0; x <= max; x++) {
-            if(x % 9 > 6){
-                continue;
-            }
             tmp = [];
             match = this.coord[x].match;
-            rest = x+1 % objConsts.columns;
-            if(match >-1 && toRemove.indexOf(x)===-1  && !this.coord[x].falling){
+
+            if(match >-1 && !this.coord[x].falling){
                 tmp.push(x);
-                for(i = 1;i<=rest;i++){
+
+                for(i = 1;i<=objConsts.columns;i++){
                     tmpPos = x + i;
+                    if(tmpPos % 9 === 0){
+                        if(tmpPos>170){
+                            console.log(tmpPos);
+                        }
+                        break;
+                    }
                     tmpMatch = this.coord[tmpPos].match;
                     if(tmpMatch === match && !this.coord[tmpPos].falling){
                         tmp.push(tmpPos);
@@ -126,9 +130,50 @@ var Game  = function(id){
         return toRemove;
     };
 
+    this.chkBomb = function(currentList){
+        var arr = currentList;
+        for(var i = 0; i < currentList.length;i++){
+            if(this.coord[i].type === 2 && this.coord[i].counter===1 ){
+                var destroy_1 = i + 1;
+                var destroy_2 = i - 1;
+                var destroy_3 = i + objConsts.columns;
+                var destroy_4 = i + objConsts.columns + 1;
+                var destroy_5 = i + objConsts.columns - 1;
+                var destroy_6 = i - objConsts.columns;
+                var destroy_7 = i - objConsts.columns + 1;
+                var destroy_8 = i - objConsts.columns - 1;
+                if(destroy_1 % 9 !== 0 && arr.length > destroy_1){
+                    arr.push(destroy_1);
+                }
+                if(i % 9 !== 0){
+                    arr.push(destroy_2);
+                }
+                if(arr.length > destroy_3){
+                    arr.push(destroy_3);
+                }
+                if(destroy_4 % 9 !== 0 && arr.length > destroy_4){
+                    arr.push(destroy_4);
+                }
+                if(i % 9 !== 0 && arr.length > destroy_5){
+                    arr.push(destroy_5);
+                }
+                if( destroy_6 > -1){
+                    arr.push(destroy_6);
+                }
+                if(i % 9 !== 0 && destroy_7 > -1){
+                    arr.push(destroy_7);
+                }
+                if(destroy_8 % 9 !== 0 && destroy_8 > -1){
+                    arr.push(destroy_8);
+                }
+            }
+        }
+        return arr;
+    };
+
 
     this.chkVertical = function(){
-        var max = this.getMax(1),i,tmpMatch,match,tmpPos;
+        var max = this.getMax(1),tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
         for(var x = 0; x <= max; x++) {
@@ -162,6 +207,83 @@ var Game  = function(id){
         }
         return toRemove;
     };
+    this.chkDigaonalLR = function(){
+        var max = this.getMax(2),tmpMatch,match,tmpPos;
+        var tmp;
+        var toRemove = [];
+        for(var x = 0; x <= max; x++) {
+            tmp = [];
+            match = this.coord[x].match;
+
+            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
+                tmp.push(x);
+                tmpPos=x;
+                var wh = true;
+                while(wh){
+                    tmpPos += objConsts.columns+1;
+                    //Wenn über den rechten Rand hinaus.
+                    if(tmpPos % 9 === 0){
+                        break;
+                    }
+                    if(tmpPos >= objConsts.playFieldSize()){
+                        break;
+                    }
+                    tmpMatch = this.coord[tmpPos].match;
+                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                        tmp.push(tmpPos);
+                    }else{
+                        break;
+                    }
+                }
+                if(tmp.length>2){
+                    this.Combo++;
+                    if (this.Combo > 1) this.ComboCount++;
+                    this.Lines++;
+                    toRemove = toRemove.concat(tmp);
+                    break;
+                }
+            }
+        }
+        return toRemove;
+    };
+
+    this.chkDigaonalRL = function(){
+        var max = this.getMax(2),tmpMatch,match,tmpPos;
+        var tmp;
+        var toRemove = [];
+        for(var x = 0; x <= max; x++) {
+            tmp = [];
+            match = this.coord[x].match;
+            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
+                tmp.push(x);
+                tmpPos=x;
+                var wh = true;
+                while(wh){
+                    if(tmpPos % 9 === 0){
+                        break;
+                    }
+                    tmpPos += objConsts.columns-1;
+                    if(tmpPos >= objConsts.playFieldSize()){
+                        break;
+                    }
+                    tmpMatch = this.coord[tmpPos].match;
+                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                        tmp.push(tmpPos);
+                    }else{
+                        break;
+                    }
+                }
+                if(tmp.length>2){
+                    this.Combo++;
+                    if (this.Combo > 1) this.ComboCount++;
+                    this.Lines++;
+                    toRemove = toRemove.concat(tmp);
+                    break;
+                }
+            }
+        }
+        return toRemove;
+    };
 
     this.checkColumns = function() {
 
@@ -169,6 +291,9 @@ var Game  = function(id){
 
         listToRemove = listToRemove.concat(this.chkHorizontal());
         listToRemove = listToRemove.concat(this.chkVertical());
+        listToRemove = listToRemove.concat(this.chkDigaonalLR());
+        listToRemove = listToRemove.concat(this.chkDigaonalRL());
+        listToRemove = this.chkBomb(listToRemove);
         if(listToRemove.length > 0){
             this.chkMarbleForRemove(listToRemove);
         }
@@ -185,8 +310,9 @@ var Game  = function(id){
             }else{
                 this.coord[listToRemove[i]].counter = 0;
                 this.coord[listToRemove[i]].match = -1;
-                this.coord[listToRemove[i]].type = 0;
+                this.coord[listToRemove[i]].type = 1;
                 this.coord[listToRemove[i]].color = -6;
+                this.coord[listToRemove[i]].falling = false;
             }
         }
         objTimer.start(this);
@@ -304,6 +430,7 @@ var Game  = function(id){
         this.coord[to].match =  this.coord[from].match;
         this.coord[to].falling =  this.coord[from].falling;
         this.coord[to].counter =  this.coord[from].counter;
+        this.coord[to].type =  this.coord[from].type;
     };
 
     this.gravity = function() {
@@ -316,17 +443,10 @@ var Game  = function(id){
 
                 if(this.coord[y].falling === false) {
                     if (this.coord[y + objConsts.columns].color === -1 && this.coord[y].color > -1) {
-                        this.coord[y + objConsts.columns].color = this.coord[y].color;
-                        this.coord[y].falling = false;
+                        this.copyMarbles(y,y + objConsts.columns);
+                        this.deactivate(y);
                         checking = true;
                     }
-
-                    if (this.coord[y + objConsts.columns] === -1 && this.coord[y] > -1) {
-                        this.coord[y + objConsts.columns] = this.coord[y];
-                        this.coord[y] = -1;
-                        checking = true;
-                    }
-
                 }
 
             }
@@ -408,12 +528,15 @@ var objTimer = {
     startWidthTime : function(interval,game){
         if (game.tMainLoop !== undefined) {
             clearInterval(game.tMainLoop);
+            clearInterval(game.tRemove);
         }
         game.tMainLoop = setInterval(function() { repeater.loopInterval(game)},interval);
+        game.tRemove = setInterval(function() { repeater.removeInterval(game)},interval);
     },
     start: function(game) {
         if (game.tMainLoop !== undefined) {
             clearInterval(game.tMainLoop);
+            clearInterval(game.tRemove);
         }
         var actTime = new Date().getTime();
         var gameTime = (actTime - game.gameTime) / 1000;
