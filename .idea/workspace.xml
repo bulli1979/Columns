@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a62da47-3d7f-4576-b05a-71551431fa2c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ressource/enginebackup.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ressource/engine.js" afterPath="$PROJECT_DIR$/ressource/engine.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ressource/engine2.js" afterPath="$PROJECT_DIR$/ressource/engine2.js" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,32 +14,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="engine.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ressource/engine.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="110" column="72" lean-forward="false" selection-start-line="110" selection-start-column="72" selection-end-line="110" selection-end-column="72" />
-              <folding>
-                <marker date="1497302401793" expanded="true" signature="14572:14583" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="engine2.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ressource/engine2.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3306">
-              <caret line="205" column="21" lean-forward="false" selection-start-line="205" selection-start-column="9" selection-end-line="205" selection-end-column="21" />
-              <folding>
-                <marker date="1497296445268" expanded="true" signature="9657:9668" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -131,8 +103,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -162,6 +132,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -680,11 +652,12 @@
       <workItem from="1497168243317" duration="22096000" />
       <workItem from="1497235732500" duration="1910000" />
       <workItem from="1497277541825" duration="20376000" />
+      <workItem from="1497365468939" duration="367000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66719000" />
+    <option name="totallyTimeSpent" value="67086000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
@@ -732,6 +705,26 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/ressource/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1870">
+          <caret line="110" column="72" lean-forward="false" selection-start-line="110" selection-start-column="72" selection-end-line="110" selection-end-column="72" />
+          <folding>
+            <marker date="1497302401793" expanded="true" signature="14572:14583" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ressource/engine2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3485">
+          <caret line="205" column="21" lean-forward="false" selection-start-line="205" selection-start-column="9" selection-end-line="205" selection-end-column="21" />
+          <folding>
+            <marker date="1497296445268" expanded="true" signature="9657:9668" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ressource/engine.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1041,8 +1034,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ressource/engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="110" column="72" lean-forward="false" selection-start-line="110" selection-start-column="72" selection-end-line="110" selection-end-column="72" />
+        <state relative-caret-position="35">
+          <caret line="253" column="35" lean-forward="true" selection-start-line="253" selection-start-column="35" selection-end-line="253" selection-end-column="35" />
           <folding>
             <marker date="1497302401793" expanded="true" signature="14572:14583" ph="..." />
           </folding>
@@ -1051,8 +1044,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ressource/engine2.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3306">
-          <caret line="205" column="21" lean-forward="false" selection-start-line="205" selection-start-column="9" selection-end-line="205" selection-end-column="21" />
+        <state relative-caret-position="598">
+          <caret line="200" column="0" lean-forward="true" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
           <folding>
             <marker date="1497296445268" expanded="true" signature="9657:9668" ph="..." />
           </folding>
