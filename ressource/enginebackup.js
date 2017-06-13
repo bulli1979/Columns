@@ -103,12 +103,12 @@ var Game  = function(id){
             tmp = [];
             match = this.coord[x].match;
             rest = x+1 % objConsts.columns;
-            if(match >-1 && toRemove.indexOf(x)===-1  && !this.coord[x].falling){
+            if(match >-1 && toRemove.indexOf(x)===-1){
                 tmp.push(x);
                 for(i = 1;i<=rest;i++){
                     tmpPos = x + i;
                     tmpMatch = this.coord[tmpPos].match;
-                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                    if(tmpMatch === match){
                         tmp.push(tmpPos);
                     }else{
                         break;
@@ -121,54 +121,20 @@ var Game  = function(id){
                     toRemove = toRemove.concat(tmp);
                     break;
                 }
+
             }
         }
         return toRemove;
+
     };
 
-
-    this.chkVertical = function(){
-        var max = this.getMax(1),i,tmpMatch,match,tmpPos;
-        var tmp;
-        var toRemove = [];
-        for(var x = 0; x <= max; x++) {
-
-            tmp = [];
-            match = this.coord[x].match;
-            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
-                tmp.push(x);
-                tmpPos=x;
-                var wh = true;
-                while(wh){
-                    tmpPos += objConsts.columns;
-                    if(tmpPos >= objConsts.playFieldSize()){
-                        break;
-                    }
-                    tmpMatch = this.coord[tmpPos].match;
-                    if(tmpMatch === match && !this.coord[tmpPos].falling){
-                        tmp.push(tmpPos);
-                    }else{
-                        break;
-                    }
-                }
-                if(tmp.length>2){
-                    this.Combo++;
-                    if (this.Combo > 1) this.ComboCount++;
-                    this.Lines++;
-                    toRemove = toRemove.concat(tmp);
-                    break;
-                }
-            }
-        }
-        return toRemove;
-    };
 
     this.checkColumns = function() {
 
         var listToRemove = [];
 
-        listToRemove = listToRemove.concat(this.chkHorizontal());
-        listToRemove = listToRemove.concat(this.chkVertical());
+        listToRemove = listToRemove.concat(this.chkHorizontal())
+
         if(listToRemove.length > 0){
             this.chkMarbleForRemove(listToRemove);
         }
@@ -294,6 +260,7 @@ var Game  = function(id){
         var y;
         for (y = 0; y < objConsts.playFieldSize(); y++) {
             if (this.coord[y].color < -1) {
+                console.log(this.coord[y].color);
                 this.coord[y].color = this.coord[y].color + 1;
                 this.paintCanvas();
             }
@@ -393,12 +360,12 @@ var globals = {
     }
 };
 var repeater = {
-    loopInterval : function(game){
+	loopInterval : function(game){
         game.mainLoop();
-    },
-    removeInterval : function(game){
+	},
+	removeInterval : function(game){
         game.clearMarbles()
-    }
+	}
 };
 
 /** Object timer dient dazu die intervalle zu setzen und neu zu gestalten. Immer wenn der Timer neu gesetzt wird prüft
@@ -412,20 +379,20 @@ var objTimer = {
         game.tMainLoop = setInterval(function() { repeater.loopInterval(game)},interval);
     },
     start: function(game) {
-        if (game.tMainLoop !== undefined) {
-            clearInterval(game.tMainLoop);
-        }
-        var actTime = new Date().getTime();
+		if (game.tMainLoop !== undefined) {
+			clearInterval(game.tMainLoop);
+		}
+		var actTime = new Date().getTime();
         var gameTime = (actTime - game.gameTime) / 1000;
-        if((game.gameLevel * 30) < gameTime){
-            game.gameLevel ++;
-            if(game.gameLevel < 9){
+		if((game.gameLevel * 30) < gameTime){
+		    game.gameLevel ++;
+		    if(game.gameLevel < 9){
                 game.currentTime -=20;
             }
         }
 
-        game.tMainLoop = setInterval(function() { repeater.loopInterval(game)}, game.currentTime);
-        game.tRemove = setInterval(function() { repeater.removeInterval(game)}, game.currentTime);
+		game.tMainLoop = setInterval(function() { repeater.loopInterval(game)}, game.currentTime);
+        game.tRemove = setInterval(function() { repeater.removeInterval(game)}, 50);
 
     },
     stop: function(game) {
@@ -460,7 +427,7 @@ var objCanvas = {
     }
 };
 var gameKeys = {
-    p1left  : 65,
+	p1left  : 65,
     p1right : 68,
     p1swap  : 83,
     p1drop  : 32,
@@ -491,21 +458,21 @@ $(function(){
 
 // Keyboard events
 $(document).bind('keydown', function (e) {
-    if(player1 !== null){
-        switch (e.which) {
-            case gameKeys.p1left :
-                player1.move('left');
-                break;
-            case gameKeys.p1right :
-                player1.move('right');
-                break;
-            case gameKeys.p1swap :
-                player1.move('swap');
-                break;
-            case gameKeys.p1drop :
-                player1.move('drop');
-                break;
-        }
+	if(player1 !== null){
+		switch (e.which) {
+			case gameKeys.p1left :
+				player1.move('left');
+				break;
+			case gameKeys.p1right :
+				player1.move('right');
+				break;
+			case gameKeys.p1swap :
+				player1.move('swap');
+				break;
+			case gameKeys.p1drop :
+				player1.move('drop');
+				break;
+		}
     }
     if(player2 !== null){
         switch (e.which) {
