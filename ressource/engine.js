@@ -24,7 +24,6 @@ var Game  = function(id){
         var orientation = 0;
 
         var lstToRemove = [];
-
         while (orientation < 4) {
             switch (orientation) {
                 case 0: // Horizontal
