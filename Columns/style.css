@@ -1,8 +1,5 @@
-* {
-	font-family:Arial;
-}
-
 .box {
+	position:absolute;
 	-webkit-box-shadow: 30px 3px 3px 3px rgba(0, 0, 0, 0);
 	box-shadow: 30px 3px 3px 3px rgba(0, 0, 0, 0);
 	background: #fcfff4; /* Old browsers */
@@ -21,6 +18,23 @@
 	height:40px;
 	width:40px;
 }
+.gameOver{
+    display:none;
+	background-color:#ffffff;
+	position:absolute;
+	top:0;left:0;
+	width:100%;
+	text-align:center;
+	padding-top:50px;
+	height:500px;
+	z-index:1000;
+	font-family: 'Open Sans', sans-serif;
+	color: #555;
+	font-size: 150px;
+	font-weight: 800;
+	text-shadow: #EDEDED 3px 2px 0;
+}
+
 #score {
 	position:absolute;
 	width:130px;

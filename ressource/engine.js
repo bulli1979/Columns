@@ -133,15 +133,15 @@ var Game  = function(id){
     this.chkBomb = function(currentList){
         var arr = currentList;
         for(var i = 0; i < currentList.length;i++){
-            if(this.coord[i].type === 2 && this.coord[i].counter===1 ){
-                var destroy_1 = i + 1;
-                var destroy_2 = i - 1;
-                var destroy_3 = i + objConsts.columns;
-                var destroy_4 = i + objConsts.columns + 1;
-                var destroy_5 = i + objConsts.columns - 1;
-                var destroy_6 = i - objConsts.columns;
-                var destroy_7 = i - objConsts.columns + 1;
-                var destroy_8 = i - objConsts.columns - 1;
+            if(this.coord[currentList[i]].type === 2 && this.coord[currentList[i]].counter===1 ){
+                var destroy_1 = currentList[i] + 1;
+                var destroy_2 = currentList[i] - 1;
+                var destroy_3 = currentList[i] + objConsts.columns;
+                var destroy_4 = currentList[i] + objConsts.columns + 1;
+                var destroy_5 = currentList[i] + objConsts.columns - 1;
+                var destroy_6 = currentList[i] - objConsts.columns;
+                var destroy_7 = currentList[i] - objConsts.columns + 1;
+                var destroy_8 = currentList[i] - objConsts.columns - 1;
                 if(destroy_1 % 9 !== 0 && arr.length > destroy_1){
                     arr.push(destroy_1);
                 }
@@ -465,15 +465,22 @@ var Game  = function(id){
             this.dropping = false;
             objTimer.start(this);
         }
+        var gameOver = false;
+
 
         for(var init = 0 ;init < objConsts.winningColumn; init++) {
-
+            if(this.coord[objConsts.startColumn + (init * objConsts.columns)].color>-1){
+                gameOver = true;
+                break;
+            }
             var color = globals.randomCount(0,8.49999);
             var match = color;
             var bomb = globals.randomCount(0,100.499999);
+            var type = 1;
             /** Sonderstein Bombe Chance hier beeinflussen Bombe Change 5% */
             if(bomb >= 95){
                 color+=9;
+                type=2;
             }
 
             var counter = 1;
@@ -485,9 +492,17 @@ var Game  = function(id){
             this.coord[objConsts.startColumn + (init * objConsts.columns)].counter = counter;
             this.coord[objConsts.startColumn + (init * objConsts.columns)].falling = true;
             this.coord[objConsts.startColumn + (init * objConsts.columns)].match = match;
-            this.coord[objConsts.startColumn + (init * objConsts.columns)].type = 2;
+            this.coord[objConsts.startColumn + (init * objConsts.columns)].type = type;
+        }
+        if(gameOver){
+            this.gameOver();
         }
     };
+
+    this.gameOver = function(){
+        objTimer.stop(this);
+        $("#gameOver"+this.id).css("display","block");
+    }
 
     this.mainLoop = function() {
         this.marblesFall();
@@ -565,6 +580,7 @@ var objCanvas = {
         }
     },
     initPlayField : function(game) {
+        $("#gameOver"+game.id).css("display","none");
         var size = objConsts.playFieldSize();
         game.coord  =[];
         var temp = "";
