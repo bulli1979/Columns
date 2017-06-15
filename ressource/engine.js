@@ -30,28 +30,9 @@ var Game  = function(id){
     this.dropping = false;
     this.Combo = 0;
     this.ComboCount = 0;
-    this.currentTime = 2000;
+    this.currentTime = 500;
     this.gameTime = 0;
     this.gameLevel = 1;
-
-
-    this.getMax = function(orientation){
-        switch (orientation) {
-            case 0: // Horizontal
-                return objConsts.playFieldSize()-3;  //Feldgrösse -4 letzte zu prüfende von links
-                break;
-            case 1: // Vertical
-                return ((objConsts.rows -2) * objConsts.columns)-1; // 2 Zeilen abziehen bis zur letzten Position
-                break;
-            case 2: // Diagonal L to R
-                return ((objConsts.rows -2) * objConsts.columns)-1 - objConsts.winningColumn; //2 Zeilen abziehen rechts anzahlMarbles abziehen Felder weg
-                break;
-            case 3: // Diagonal R to L
-                return ((objConsts.rows -2) * objConsts.columns)-1; //2 Zeilen abziehen rechts beginnen
-                break;
-        }
-    };
-
 
     this.getCondition = function(orientation, x , matching){
         var pos;
@@ -93,7 +74,8 @@ var Game  = function(id){
     };
 
     this.chkHorizontal = function(){
-        var max = this.getMax(0),i,tmpMatch,match,tmpPos;
+        var max = objConsts.playFieldSize()-3;
+        var i,tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
         for(var x = 0; x <= max; x++) {
@@ -106,9 +88,6 @@ var Game  = function(id){
                 for(i = 1;i<=objConsts.columns;i++){
                     tmpPos = x + i;
                     if(tmpPos % 9 === 0){
-                        if(tmpPos>170){
-                            console.log(tmpPos);
-                        }
                         break;
                     }
                     tmpMatch = this.coord[tmpPos].match;
@@ -133,19 +112,20 @@ var Game  = function(id){
     this.chkBomb = function(currentList){
         var arr = currentList;
         for(var i = 0; i < currentList.length;i++){
-            if(this.coord[currentList[i]].type === 2 && this.coord[currentList[i]].counter===1 ){
-                var destroy_1 = currentList[i] + 1;
-                var destroy_2 = currentList[i] - 1;
-                var destroy_3 = currentList[i] + objConsts.columns;
-                var destroy_4 = currentList[i] + objConsts.columns + 1;
-                var destroy_5 = currentList[i] + objConsts.columns - 1;
-                var destroy_6 = currentList[i] - objConsts.columns;
-                var destroy_7 = currentList[i] - objConsts.columns + 1;
-                var destroy_8 = currentList[i] - objConsts.columns - 1;
+            var pos = currentList[i];
+            if(this.coord[pos].type === 2 && this.coord[pos].counter===1 ){
+                var destroy_1 = pos + 1;
+                var destroy_2 = pos - 1;
+                var destroy_3 = pos + objConsts.columns;
+                var destroy_4 = pos + objConsts.columns + 1;
+                var destroy_5 = pos + objConsts.columns - 1;
+                var destroy_6 = pos - objConsts.columns;
+                var destroy_7 = pos - objConsts.columns + 1;
+                var destroy_8 = pos - objConsts.columns - 1;
                 if(destroy_1 % 9 !== 0 && arr.length > destroy_1){
                     arr.push(destroy_1);
                 }
-                if(i % 9 !== 0){
+                if(pos % 9 !== 0){
                     arr.push(destroy_2);
                 }
                 if(arr.length > destroy_3){
@@ -154,13 +134,13 @@ var Game  = function(id){
                 if(destroy_4 % 9 !== 0 && arr.length > destroy_4){
                     arr.push(destroy_4);
                 }
-                if(i % 9 !== 0 && arr.length > destroy_5){
+                if(pos % 9 !== 0 && arr.length > destroy_5){
                     arr.push(destroy_5);
                 }
                 if( destroy_6 > -1){
                     arr.push(destroy_6);
                 }
-                if(i % 9 !== 0 && destroy_7 > -1){
+                if(pos % 9 !== 0 && destroy_7 > -1){
                     arr.push(destroy_7);
                 }
                 if(destroy_8 % 9 !== 0 && destroy_8 > -1){
@@ -173,16 +153,18 @@ var Game  = function(id){
 
 
     this.chkVertical = function(){
-        var max = this.getMax(1),tmpMatch,match,tmpPos;
+       var tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
-        for(var x = 0; x <= max; x++) {
-
+        for(var x = 0; x <= objConsts.playFieldSize(); x++) {
             tmp = [];
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
             match = this.coord[x].match;
-            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
+            if(match >-1 && !this.coord[x].falling){
                 tmp.push(x);
-                tmpPos=x;
+                tmpPos = x;
                 var wh = true;
                 while(wh){
                     tmpPos += objConsts.columns;
@@ -208,14 +190,19 @@ var Game  = function(id){
         return toRemove;
     };
     this.chkDigaonalLR = function(){
-        var max = this.getMax(2),tmpMatch,match,tmpPos;
+        var max = objConsts.playFieldSize()-3,tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
         for(var x = 0; x <= max; x++) {
             tmp = [];
+
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
+
             match = this.coord[x].match;
 
-            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
+            if(match >-1 && !this.coord[x].falling){
                 tmp.push(x);
                 tmpPos=x;
                 var wh = true;
@@ -248,13 +235,16 @@ var Game  = function(id){
     };
 
     this.chkDigaonalRL = function(){
-        var max = this.getMax(2),tmpMatch,match,tmpPos;
+        var max =  objConsts.playFieldSize(),tmpMatch,match,tmpPos;
         var tmp;
         var toRemove = [];
         for(var x = 0; x <= max; x++) {
             tmp = [];
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
             match = this.coord[x].match;
-            if(match >-1 && toRemove.indexOf(x)===-1 && !this.coord[x].falling){
+            if(match >-1 && !this.coord[x].falling){
                 tmp.push(x);
                 tmpPos=x;
                 var wh = true;
@@ -323,7 +313,6 @@ var Game  = function(id){
 
     this.updateScores = function() {
         $("#score" + this.id).text(this.Score);
-        $("#combos" + this.id).text(this.ComboCount);
     };
 
     this.paintCanvas = function() {
@@ -502,7 +491,8 @@ var Game  = function(id){
     this.gameOver = function(){
         objTimer.stop(this);
         $("#gameOver"+this.id).css("display","block");
-    }
+        $("#player"+this.id).css("display","none");
+    };
 
     this.mainLoop = function() {
         this.marblesFall();
@@ -543,10 +533,10 @@ var objTimer = {
     startWidthTime : function(interval,game){
         if (game.tMainLoop !== undefined) {
             clearInterval(game.tMainLoop);
-            clearInterval(game.tRemove);
+           // clearInterval(game.tRemove);
         }
         game.tMainLoop = setInterval(function() { repeater.loopInterval(game)},interval);
-        game.tRemove = setInterval(function() { repeater.removeInterval(game)},interval);
+        //game.tRemove = setInterval(function() { repeater.removeInterval(game)},50);
     },
     start: function(game) {
         if (game.tMainLoop !== undefined) {
@@ -563,7 +553,7 @@ var objTimer = {
         }
 
         game.tMainLoop = setInterval(function() { repeater.loopInterval(game)}, game.currentTime);
-        game.tRemove = setInterval(function() { repeater.removeInterval(game)}, game.currentTime);
+        game.tRemove = setInterval(function() { repeater.removeInterval(game)}, 50);
 
     },
     stop: function(game) {
@@ -592,7 +582,7 @@ var objCanvas = {
             temp += "<img src='../images/-1.png' height='32' width='31' />";
             temp += "</div>"
         }
-        $("#player"+game.id).css({"height": (32*objConsts.rows) + "px","width": (32*objConsts.columns) + "px" }).html(temp);
+        $("#player"+game.id).css({"height": (32*objConsts.rows) + "px","width": (32*objConsts.columns) + "px","display" : "block" }).html(temp);
         objCanvas.initCoordinate(game);
         game.newMarbles();
         objTimer.start(game);

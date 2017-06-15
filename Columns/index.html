@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Ein kleines Spiel für Zwischendurch.</title>
-    <link rel="stylesheet" href="../ressource/style.css" type="text/css" />
     <link rel="stylesheet" href="../bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../ressource/style.css" type="text/css" />
     <script type="text/javascript" src="../ressource/jquery.js"></script>
     <script type="text/javascript" src="../ressource/engine.js"></script>
 </head>
@@ -27,15 +27,13 @@
                 </span>
                 <span id="start" class="btn btn-success">Start</span>
             </div>
-            <div class="row">
-                <div class="col-md-1">
-                    <div id="score1" class="box"></div>
-                    <div id="combos1" class="box"></div>
-                </div>
-                <div class="col-md-1">
-                    <div id="score2" class="box"></div>
-                    <div id="combos2" class="box"></div>
-                </div>
+            <div class="playerBox" id="playerInfo1">
+                <div class="headline">Player 1</div>
+                <div id="score1" class="score"></div>
+            </div>
+            <div class="playerBox" id="playerInfo2">
+                <div class="headline">Player 2</div>
+                <div id="score2" class="score"></div>
             </div>
 
         </div>
