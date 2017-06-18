@@ -3,6 +3,8 @@ var objConsts = {
     rows: 20,
     startColumn : 4,
     winningColumn : 3,
+    sound : true,
+    effect : true,
     playFieldSize : function() {
         return this.columns * this.rows;
     },
@@ -33,7 +35,8 @@ var Game  = function(id){
     this.currentTime = 500;
     this.gameTime = 0;
     this.gameLevel = 1;
-
+    this.play = false;
+    this.foundBomb = false;
     this.getCondition = function(orientation, x , matching){
         var pos;
         var left;
@@ -110,10 +113,14 @@ var Game  = function(id){
     };
 
     this.chkBomb = function(currentList){
-        var arr = currentList;
-        for(var i = 0; i < currentList.length;i++){
-            var pos = currentList[i];
+        var arr = [];
+        var points = 0;
+        this.foundBomb = false;
+        for(var listPosition = 0; listPosition < currentList.length; listPosition++){
+            var pos = currentList[listPosition];
             if(this.coord[pos].type === 2 && this.coord[pos].counter===1 ){
+                this.foundBomb = true;
+                /** Bombe explodiert jeder Stein bringt x punkte */
                 var destroy_1 = pos + 1;
                 var destroy_2 = pos - 1;
                 var destroy_3 = pos + objConsts.columns;
@@ -122,33 +129,59 @@ var Game  = function(id){
                 var destroy_6 = pos - objConsts.columns;
                 var destroy_7 = pos - objConsts.columns + 1;
                 var destroy_8 = pos - objConsts.columns - 1;
-                if(destroy_1 % 9 !== 0 && arr.length > destroy_1){
-                    arr.push(destroy_1);
+                if(destroy_1 % 9 !== 0 && objConsts.playFieldSize() > destroy_1){
+                    if(this.coord[destroy_1].color>-1){
+                        points += 2;
+                        arr.push(destroy_1);
+                    }
                 }
                 if(pos % 9 !== 0){
-                    arr.push(destroy_2);
+                    if(this.coord[destroy_2].color>-1) {
+                        points += 2;
+                        arr.push(destroy_2);
+                    }
                 }
-                if(arr.length > destroy_3){
-                    arr.push(destroy_3);
+                if(objConsts.playFieldSize() > destroy_3){
+                    if(this.coord[destroy_3].color>-1) {
+                        points += 2;
+                        arr.push(destroy_3);
+                    }
                 }
-                if(destroy_4 % 9 !== 0 && arr.length > destroy_4){
-                    arr.push(destroy_4);
+                if(destroy_4 % 9 !== 0 && objConsts.playFieldSize() > destroy_4){
+                    if(this.coord[destroy_4].color>-1){
+                        points += 2;
+                        arr.push(destroy_4);
+                    }
                 }
-                if(pos % 9 !== 0 && arr.length > destroy_5){
-                    arr.push(destroy_5);
+                if(pos % 9 !== 0 && objConsts.playFieldSize() > destroy_5){
+                    if(this.coord[destroy_5].color>-1) {
+                        points += 2;
+                        arr.push(destroy_5);
+                    }
                 }
                 if( destroy_6 > -1){
-                    arr.push(destroy_6);
+                    if(this.coord[destroy_6].color>-1) {
+                        points += 2;
+                        arr.push(destroy_6);
+                    }
                 }
                 if(pos % 9 !== 0 && destroy_7 > -1){
-                    arr.push(destroy_7);
+                    if(this.coord[destroy_7].color>-1) {
+                        points += 2;
+                        arr.push(destroy_7);
+                    }
                 }
                 if(destroy_8 % 9 !== 0 && destroy_8 > -1){
-                    arr.push(destroy_8);
+                    if(this.coord[destroy_8].color>-1) {
+                        points += 2;
+                        arr.push(destroy_8);
+                    }
                 }
             }
         }
-        return arr;
+
+        this.Score +=points;
+        return arr.concat(currentList);
     };
 
 
@@ -291,9 +324,17 @@ var Game  = function(id){
 
 
 
-
+    /**
+     * chk Marbels for remove*/
     this.chkMarbleForRemove = function(listToRemove){
         this.Score += listToRemove.length;
+        if(this.foundBomb){
+            $("#bombSound")[0].play();
+        }else if(listToRemove.length === 3){
+            $("#singleDingSound")[0].play();
+        }else if(listToRemove.length > 3){
+            $("#dingSound")[0].play();
+        }
         for(var i = 0;i<listToRemove.length;i++){
             if(this.coord[listToRemove[i]].counter>1){
                 this.coord[listToRemove[i]].counter--;
@@ -310,11 +351,12 @@ var Game  = function(id){
 
 
 
-
+    /** Score update*/
     this.updateScores = function() {
         $("#score" + this.id).text(this.Score);
     };
 
+    /** paint the Game */
     this.paintCanvas = function() {
         var y;
         for (y = 0; y < objConsts.playFieldSize(); y++) {
@@ -323,6 +365,8 @@ var Game  = function(id){
             $("#img_"+this.id+"_"+y).html("<img src='../images/" + color + ".png' height='32' width='31'>");
         }
     };
+
+    /** get the position for the first marble who has a color */
     this.getPosition = function() {
         // Returns the position of the first falling marble
         var y;
@@ -333,6 +377,8 @@ var Game  = function(id){
         }
         return 0;
     };
+
+    /** next position check for falling marbles */
     this.moveFallingMarbles = function(y, oldPosition) {
         var x;
         for (x = objConsts.winningColumn; x > -1; x--) {
@@ -346,6 +392,7 @@ var Game  = function(id){
         }
     };
 
+    /** Move a Marble to the given direction if it possible*/
     this.move = function(direction) {
         var y = this.getPosition();
         var oldPosition = y;
@@ -375,6 +422,8 @@ var Game  = function(id){
         }
 
     };
+
+    /** MArble Fall controll */
     this.marblesFall = function() {
         var x , position;
 
@@ -405,6 +454,8 @@ var Game  = function(id){
             }
         }
     };
+
+    /** chk dematerialize of marbles*/
     this.clearMarbles = function() {
         var y;
         for (y = 0; y < objConsts.playFieldSize(); y++) {
@@ -414,6 +465,7 @@ var Game  = function(id){
             }
         }
     };
+    /** deep copy of a Marble */
     this.copyMarbles = function(from,to){
         this.coord[to].color =  this.coord[from].color;
         this.coord[to].match =  this.coord[from].match;
@@ -422,6 +474,7 @@ var Game  = function(id){
         this.coord[to].type =  this.coord[from].type;
     };
 
+    /** check for Gabs */
     this.gravity = function() {
         var checking = true;
         var y;
@@ -442,6 +495,7 @@ var Game  = function(id){
         }
     };
 
+    /** Deactivate a Marble */
     this.deactivate = function(position){
         this.coord[position].color = -1;
         this.coord[position].counter = 0;
@@ -449,6 +503,8 @@ var Game  = function(id){
         this.coord[position].match = -1;
     };
 
+
+    /** Create new MArbles chk for Game Over */
     this.newMarbles = function() {
         if(this.dropping) {
             this.dropping = false;
@@ -488,10 +544,18 @@ var Game  = function(id){
         }
     };
 
+    /**Spiel wieder herstellen*/
     this.gameOver = function(){
         objTimer.stop(this);
         $("#gameOver"+this.id).css("display","block");
         $("#player"+this.id).css("display","none");
+        this.play = false;
+        var obj = $("#gameSound")[0];
+        if((this.id === 1 && player2 === null ) || (player2 !== null && !player2.play)){
+            obj.pause();
+        }else if(this.id === 2 && !player2.play){
+            obj.pause();
+        }
     };
 
     this.mainLoop = function() {
@@ -504,6 +568,8 @@ var Game  = function(id){
 };
 
 var globals = {
+    sound : true,
+    effects : true,
     randomCount : function(a,b) {
         return Math.round((Math.random()*b)+a);
     },
@@ -588,6 +654,8 @@ var objCanvas = {
         objTimer.start(game);
     }
 };
+
+/** This descripe the game keys in the game. p1 = Player 1 p2 = player 2*/
 var gameKeys = {
     p1left  : 65,
     p1right : 68,
@@ -600,26 +668,55 @@ var gameKeys = {
 };
 var player1 = null;
 var player2 = null;
-// Init
+
+
+/** Initialize Game Set Play ist started and set player count and start init*/
 $(function(){
 
     $("#start").click(function(){
-        var playerCount = $("#playerCount").val();
-        player1 = new Game("1");
+        /** return if a game is running*/
+        if((player1!== null && player1.play) || (player2!== null && player2.play)){
+            return;
+        }
+        if(objConsts.sound){
+            $("#gameSound")[0].play();
+        }
         var start = new Date().getTime();
+        /** Player count from Select box*/
+        var playerCount = $("#playerCount").val();
+        /** Initialize Player */
+        player1 = new Game("1");
         player1.gameTime = start;
+        player1.play = true;
         objCanvas.initPlayField(player1);
         if(playerCount === "2"){
             player2 = new Game("2");
             player2.gameTime = start;
+            player2.play = true;
             objCanvas.initPlayField(player2);
         }
-    })
+    });
+    $("#effect").on("click",function(){
+        objConsts.effect = this.checked;
+    });
 
+    $("#sound").on("click",function(){
+        if( this.checked){
+            objConsts.sound = true;
+            if((player1 !== null && player1.play === true) || (player2 !== null && player2.play === true)){
+                $("#gameSound")[0].play();
+            }
+        }else{
+            objConsts.sound = false;
+            if((player1 !== null && player1.play) || (player2 !== null && player2.play)){
+                $("#gameSound")[0].pause();
+            }
+        }
+    });
 });
 
-// Keyboard events
-$(document).bind('keydown', function (e) {
+/** Add Keyboard Events change gameKeys to change controll*/
+$(document).on('keydown', function (e) {
     if(player1 !== null){
         switch (e.which) {
             case gameKeys.p1left :
