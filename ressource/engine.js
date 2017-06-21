@@ -37,45 +37,7 @@ var Game  = function(id){
     this.gameLevel = 1;
     this.play = false;
     this.foundBomb = false;
-    this.getCondition = function(orientation, x , matching){
-        var pos;
-        var left;
-        switch (orientation) {
-            case 0:
-                pos = x + matching;
-                left = objConsts.columns- (pos+1 % objConsts.columns);
-
-                if(matching >= left){
-                    return null;
-                }
-                return pos;
-                break;
-            case 1:
-                pos = x + objConsts.columns * matching;
-                if(pos > objConsts.playFieldSize()-1){
-                    return null;
-                }
-                return pos;
-                break;
-            case 2:
-                pos = x + (objConsts.columns * matching) + matching;
-                left = objConsts.columns - (pos+1 % objConsts.columns);
-                if(pos > objConsts.playFieldSize()-1 || matching >= left){
-                    return null;
-                }
-                return pos;
-                break;
-            case 3:
-                pos = x + (objConsts.columns * matching)-matching;
-                left = (pos+1 % objConsts.columns);
-                if(pos > objConsts.playFieldSize()-1 || matching >= left){
-                    return null;
-                }
-                return pos;
-                break;
-        }
-    };
-
+    /** chk horizontal for 3 in a row*/
     this.chkHorizontal = function(){
         var max = objConsts.playFieldSize()-3;
         var i,tmpMatch,match,tmpPos;
@@ -112,6 +74,136 @@ var Game  = function(id){
         return toRemove;
     };
 
+
+
+
+    /** chk Vertical for marbles for 3 in a row*/
+    this.chkVertical = function(){
+       var tmpMatch,match,tmpPos;
+        var tmp;
+        var toRemove = [];
+        for(var x = 0; x <= objConsts.playFieldSize(); x++) {
+            tmp = [];
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
+            match = this.coord[x].match;
+            if(match >-1 && !this.coord[x].falling){
+                tmp.push(x);
+                tmpPos = x;
+                var wh = true;
+                while(wh){
+                    tmpPos += objConsts.columns;
+                    if(tmpPos >= objConsts.playFieldSize()){
+                        break;
+                    }
+                    tmpMatch = this.coord[tmpPos].match;
+                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                        tmp.push(tmpPos);
+                    }else{
+                        break;
+                    }
+                }
+                if(tmp.length>2){
+                    this.Combo++;
+                    if (this.Combo > 1) this.ComboCount++;
+                    this.Lines++;
+                    toRemove = toRemove.concat(tmp);
+                    break;
+                }
+            }
+        }
+        return toRemove;
+    };
+
+    /** chk diagonal from left to right for 3 in a row*/
+    this.chkDigaonalLR = function(){
+        var max = objConsts.playFieldSize()-3,tmpMatch,match,tmpPos;
+        var tmp;
+        var toRemove = [];
+        for(var x = 0; x <= max; x++) {
+            tmp = [];
+
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
+
+            match = this.coord[x].match;
+
+            if(match >-1 && !this.coord[x].falling){
+                tmp.push(x);
+                tmpPos=x;
+                var wh = true;
+                while(wh){
+                    tmpPos += objConsts.columns+1;
+                    //Wenn über den rechten Rand hinaus.
+                    if(tmpPos % 9 === 0){
+                        break;
+                    }
+                    if(tmpPos >= objConsts.playFieldSize()){
+                        break;
+                    }
+                    tmpMatch = this.coord[tmpPos].match;
+                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                        tmp.push(tmpPos);
+                    }else{
+                        break;
+                    }
+                }
+                if(tmp.length>2){
+                    this.Combo++;
+                    if (this.Combo > 1) this.ComboCount++;
+                    this.Lines++;
+                    toRemove = toRemove.concat(tmp);
+                    break;
+                }
+            }
+        }
+        return toRemove;
+    };
+
+    /** chk Diagonale from right to left for 3 in a row*/
+    this.chkDigaonalRL = function(){
+        var max =  objConsts.playFieldSize(),tmpMatch,match,tmpPos;
+        var tmp;
+        var toRemove = [];
+        for(var x = 0; x <= max; x++) {
+            tmp = [];
+            if(x >= objConsts.playFieldSize()){
+                break;
+            }
+            match = this.coord[x].match;
+            if(match >-1 && !this.coord[x].falling){
+                tmp.push(x);
+                tmpPos=x;
+                var wh = true;
+                while(wh){
+                    if(tmpPos % 9 === 0){
+                        break;
+                    }
+                    tmpPos += objConsts.columns-1;
+                    if(tmpPos >= objConsts.playFieldSize()){
+                        break;
+                    }
+                    tmpMatch = this.coord[tmpPos].match;
+                    if(tmpMatch === match && !this.coord[tmpPos].falling){
+                        tmp.push(tmpPos);
+                    }else{
+                        break;
+                    }
+                }
+                if(tmp.length>2){
+                    this.Combo++;
+                    if (this.Combo > 1) this.ComboCount++;
+                    this.Lines++;
+                    toRemove = toRemove.concat(tmp);
+                    break;
+                }
+            }
+        }
+        return toRemove;
+    };
+    /** chk Bombs after found all rows chk if there a bomb inside*/
     this.chkBomb = function(currentList){
         var arr = [];
         var points = 0;
@@ -184,134 +276,9 @@ var Game  = function(id){
         return arr.concat(currentList);
     };
 
-
-    this.chkVertical = function(){
-       var tmpMatch,match,tmpPos;
-        var tmp;
-        var toRemove = [];
-        for(var x = 0; x <= objConsts.playFieldSize(); x++) {
-            tmp = [];
-            if(x >= objConsts.playFieldSize()){
-                break;
-            }
-            match = this.coord[x].match;
-            if(match >-1 && !this.coord[x].falling){
-                tmp.push(x);
-                tmpPos = x;
-                var wh = true;
-                while(wh){
-                    tmpPos += objConsts.columns;
-                    if(tmpPos >= objConsts.playFieldSize()){
-                        break;
-                    }
-                    tmpMatch = this.coord[tmpPos].match;
-                    if(tmpMatch === match && !this.coord[tmpPos].falling){
-                        tmp.push(tmpPos);
-                    }else{
-                        break;
-                    }
-                }
-                if(tmp.length>2){
-                    this.Combo++;
-                    if (this.Combo > 1) this.ComboCount++;
-                    this.Lines++;
-                    toRemove = toRemove.concat(tmp);
-                    break;
-                }
-            }
-        }
-        return toRemove;
-    };
-    this.chkDigaonalLR = function(){
-        var max = objConsts.playFieldSize()-3,tmpMatch,match,tmpPos;
-        var tmp;
-        var toRemove = [];
-        for(var x = 0; x <= max; x++) {
-            tmp = [];
-
-            if(x >= objConsts.playFieldSize()){
-                break;
-            }
-
-            match = this.coord[x].match;
-
-            if(match >-1 && !this.coord[x].falling){
-                tmp.push(x);
-                tmpPos=x;
-                var wh = true;
-                while(wh){
-                    tmpPos += objConsts.columns+1;
-                    //Wenn über den rechten Rand hinaus.
-                    if(tmpPos % 9 === 0){
-                        break;
-                    }
-                    if(tmpPos >= objConsts.playFieldSize()){
-                        break;
-                    }
-                    tmpMatch = this.coord[tmpPos].match;
-                    if(tmpMatch === match && !this.coord[tmpPos].falling){
-                        tmp.push(tmpPos);
-                    }else{
-                        break;
-                    }
-                }
-                if(tmp.length>2){
-                    this.Combo++;
-                    if (this.Combo > 1) this.ComboCount++;
-                    this.Lines++;
-                    toRemove = toRemove.concat(tmp);
-                    break;
-                }
-            }
-        }
-        return toRemove;
-    };
-
-    this.chkDigaonalRL = function(){
-        var max =  objConsts.playFieldSize(),tmpMatch,match,tmpPos;
-        var tmp;
-        var toRemove = [];
-        for(var x = 0; x <= max; x++) {
-            tmp = [];
-            if(x >= objConsts.playFieldSize()){
-                break;
-            }
-            match = this.coord[x].match;
-            if(match >-1 && !this.coord[x].falling){
-                tmp.push(x);
-                tmpPos=x;
-                var wh = true;
-                while(wh){
-                    if(tmpPos % 9 === 0){
-                        break;
-                    }
-                    tmpPos += objConsts.columns-1;
-                    if(tmpPos >= objConsts.playFieldSize()){
-                        break;
-                    }
-                    tmpMatch = this.coord[tmpPos].match;
-                    if(tmpMatch === match && !this.coord[tmpPos].falling){
-                        tmp.push(tmpPos);
-                    }else{
-                        break;
-                    }
-                }
-                if(tmp.length>2){
-                    this.Combo++;
-                    if (this.Combo > 1) this.ComboCount++;
-                    this.Lines++;
-                    toRemove = toRemove.concat(tmp);
-                    break;
-                }
-            }
-        }
-        return toRemove;
-    };
-
+    /** first chk columns after this chk bomb then remove*/
     this.checkColumns = function() {
-
         var listToRemove = [];
-
         listToRemove = listToRemove.concat(this.chkHorizontal());
         listToRemove = listToRemove.concat(this.chkVertical());
         listToRemove = listToRemove.concat(this.chkDigaonalLR());
@@ -328,13 +295,7 @@ var Game  = function(id){
      * chk Marbels for remove*/
     this.chkMarbleForRemove = function(listToRemove){
         this.Score += listToRemove.length;
-        if(this.foundBomb){
-            $("#bombSound")[0].play();
-        }else if(listToRemove.length === 3){
-            $("#singleDingSound")[0].play();
-        }else if(listToRemove.length > 3){
-            $("#dingSound")[0].play();
-        }
+        this.playSounds(listToRemove.length);
         for(var i = 0;i<listToRemove.length;i++){
             if(this.coord[listToRemove[i]].counter>1){
                 this.coord[listToRemove[i]].counter--;
@@ -350,6 +311,18 @@ var Game  = function(id){
     };
 
 
+    /** Play sounds if effects are on*/
+    this.playSounds = function(length){
+        if(objConsts.effect){
+            if(this.foundBomb){
+                $("#bombSound")[0].play();
+            }else if(length === 3){
+                $("#singleDingSound")[0].play();
+            }else if(length > 3){
+                $("#dingSound")[0].play();
+            }
+        }
+    };
 
     /** Score update*/
     this.updateScores = function() {
